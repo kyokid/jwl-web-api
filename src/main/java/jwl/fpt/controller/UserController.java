@@ -1,7 +1,7 @@
 package jwl.fpt.controller;
 
 import jwl.fpt.model.RestServiceModel;
-import jwl.fpt.entity.TblUserEntity;
+import jwl.fpt.model.dto.UserDto;
 import jwl.fpt.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +12,12 @@ import java.util.List;
  * Created by HaVH on 1/9/17.
  */
 @RestController
-@RequestMapping("/api")
 public class UserController {
-
-
     @Autowired
-    IUserService userService;
+    private IUserService userService;
 
-    @RequestMapping(path = "/getAll", method = RequestMethod.GET)
-    public List<TblUserEntity> getAllUser() {
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public List<UserDto> getAllUser() {
         return userService.getAllUser();
     }
 
@@ -42,11 +39,11 @@ public class UserController {
 //    }
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public RestServiceModel<TblUserEntity> login(@RequestBody TblUserEntity userBody) {
+    public RestServiceModel<UserDto> login(@RequestBody UserDto userBody) {
         String username = userBody.getUsername();
         String password = userBody.getPassword();
-        RestServiceModel<TblUserEntity> result = new RestServiceModel<>();
-        TblUserEntity user = userService.findByUsernameAndPassword(username, password);
+        RestServiceModel<UserDto> result = new RestServiceModel<>();
+        UserDto user = userService.findByUsernameAndPassword(username, password);
 
         if (user != null) {
             result.setMessage("Login Successfully!");
@@ -55,15 +52,15 @@ public class UserController {
             result.setData(user);
         } else {
             result.setMessage("Login Fail cmnr!");
-
         }
+
         return result;
     }
 
-    @RequestMapping(path = "/search={q}", method = RequestMethod.GET)
-    public RestServiceModel<List<TblUserEntity>> search(@PathVariable String q) {
-        RestServiceModel<List<TblUserEntity>> result = new RestServiceModel<>();
-        List<TblUserEntity> listUser = userService.findByUsernameLike(q);
+    @RequestMapping(path = "/users/search", method = RequestMethod.GET)
+    public RestServiceModel<List<UserDto>> search(@RequestParam(value = "term") String searchTerm) {
+        RestServiceModel<List<UserDto>> result = new RestServiceModel<>();
+        List<UserDto> listUser = userService.findByUsernameLike(searchTerm);
 
         if (!listUser.isEmpty()) {
             result.setMessage("Search Successfully!");
@@ -72,32 +69,7 @@ public class UserController {
             result.setData(listUser);
         } else {
             result.setMessage("Deo co gi");
-
-        }
-        return result;
-
-    }
-
-    @RequestMapping(path = "/updateProfile", method = RequestMethod.POST)
-    public RestServiceModel<TblUserEntity> updateProfile(@RequestBody TblUserEntity userBody) {
-        String username = userBody.getUsername();
-        boolean gender = userBody.isGender();
-        String password = userBody.getPassword();
-        RestServiceModel<TblUserEntity> result = new RestServiceModel<>();
-        TblUserEntity user = userService.findByUsername(username);
-
-        if (user != null) {
-            user.setPassword(password);
-            result.setMessage("Update Successfully!");
-
-            result.setSucceed(true);
-            result.setData(user);
-        } else {
-            result.setMessage("Update Fail");
-
         }
         return result;
     }
-
-
 }

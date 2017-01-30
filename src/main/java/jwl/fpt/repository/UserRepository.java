@@ -2,8 +2,6 @@ package jwl.fpt.repository;
 
 import jwl.fpt.entity.TblUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -17,7 +15,4 @@ public interface UserRepository extends JpaRepository<TblUserEntity, Integer> {
 
 
     List<TblUserEntity> findByUsernameLike(String q);
-
-    TblUserEntity findByUsername(String username);
-
 }
